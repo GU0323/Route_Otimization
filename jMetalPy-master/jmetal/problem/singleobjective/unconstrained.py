@@ -196,7 +196,7 @@ class Linear4(FloatProblem):
         super(Linear4, self).__init__()
         self.number_of_objectives = 1
         self.number_of_variables = number_of_variables
-        self.number_of_constraints = 40
+        self.number_of_constraints = int(number_of_variables/2-1)
         self.obj_directions = [self.MINIMIZE]
         self.lower_bound = [0 for _ in range(number_of_variables)]
         self.upper_bound = [10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
@@ -227,7 +227,7 @@ class Linear4(FloatProblem):
 
         R = sqrt((Px_arrival-x[-1])**2 + (Py_arrival-y[-1])**2)
 
-        print(R)
+        #print(R)
 
         S[41] = acos(sqrt((Px_arrival - x[-1])**2) / R)
 
@@ -249,14 +249,15 @@ class Linear4(FloatProblem):
 
 
         distance = distance + R + R_diviation
-        print(distance)
+        #print(distance)
 
 
 
         solution.objectives[0] = distance
         self.evaluate_constraints(solution)
-        for i in range(len(x)):
-            print(x[i], y[i])
+        #for i in range(len(x)):
+            #print(x[i], y[i])
+
 
         return solution
 
@@ -268,6 +269,8 @@ class Linear4(FloatProblem):
         y = []
         x.append(0)
         y.append(0)
+        x_Obstacle = 7
+        y_Obstacle = 7
         for i in range(int(solution.number_of_variables/2)-1):
             A = x[i] + S[2 * i] * del_t * cos(S[2 * i + 1])
             B = y[i] + S[2 * i] * del_t * sin(S[2 * i + 1])
@@ -276,7 +279,7 @@ class Linear4(FloatProblem):
 
         e = 0.1
         for i in range(int(solution.number_of_variables/2)-1):
-            constraints[i] = sqrt((15-x[i+1])**2 + (15-y[i+1])**2) - 4 - e
+            constraints[i] = sqrt((x_Obstacle-x[i+1])**2 + (y_Obstacle-y[i+1])**2) - 4 - e
 
         solution.constraints = constraints
 
