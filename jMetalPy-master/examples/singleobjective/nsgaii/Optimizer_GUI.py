@@ -3,18 +3,19 @@ from PyQt5.QtWidgets import *
 from PyQt5 import uic
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
-from math import sqrt, cos, sin, acos
+from PyQt5.QtGui import *
+from PyQt5.QtCore import Qt
 from jmetal.algorithm.multiobjective.nsgaii import NSGAII
 from jmetal.operator import SBXCrossover, PolynomialMutation
 from jmetal.util.comparator import DominanceComparator
 from jmetal.util.solution import print_function_values_to_file, print_variables_to_file
 from jmetal.util.termination_criterion import StoppingByEvaluations
-from math import cos, sin
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 
+
+
 from math import sqrt, cos, sin, atan, acos, pi
-import random
-import numpy as np
+
 from jmetal.core.problem import BinaryProblem, FloatProblem
 from jmetal.core.solution import BinarySolution, FloatSolution
 
@@ -27,8 +28,6 @@ class MyWindow(QMainWindow, form_ui):
         super(MyWindow, self).__init__()
         self.setupUi(self)
         self.fig = plt.Figure()
-        #variable2 = self.lineEdit.text()
-        #self.variable = variable2
         self.canvas = FigureCanvas(self.fig)
         self.graph_verticalLayout.addWidget(self.canvas)
         self.Startbutton.clicked.connect(self.OPtimizer)
@@ -40,11 +39,7 @@ class MyWindow(QMainWindow, form_ui):
         self.de = []
         self.ar = []
         self.Constrained_Number = 0
-
-
-
-
-
+        self.button2.clicked.connect(self.ResetButton)
 
 
     def OPtimizer(self):
@@ -68,7 +63,7 @@ class MyWindow(QMainWindow, form_ui):
 
         problem = Linear4(self.Node, self.Px_departure, self.Px_arrival, self.Py_departure, self.Py_arrival, self.Constrained_Number)
 
-        max_evaluations = 100000
+        max_evaluations = 10000
         algorithm = NSGAII(
             problem=problem,
             population_size=100,
@@ -134,12 +129,19 @@ class MyWindow(QMainWindow, form_ui):
         plt.ylim(0, 30)
         plt.show()
         '''
+        self.fig.clear()
         ax = self.fig.add_subplot(111)
+        circle1 = patches.Circle((6, 7), 3, color="r")
+        circle2 = patches.Circle((18, 12), 4, color="r")
+        circle3 = patches.Circle((20, 25), 4, color="r")
+        ax.add_artist(circle1)
+        ax.add_artist(circle2)
+        ax.add_artist(circle3)
+
         ax.plot(x, y)
         ax.set_xlabel("x")
         ax.set_xlabel("y")
-
-        ax.set_title("distance")
+        ax.set_title("Optimizer_route")
         ax.legend()
         ax.grid()
         self.canvas.draw()
@@ -154,7 +156,12 @@ class MyWindow(QMainWindow, form_ui):
 
         return
 
-
+    def ResetButton(self):
+        #self.fig.clear()
+        self.lineEdit.clear()
+        self.lineEdit_2.clear()
+        self.lineEdit_3.clear()
+        self.lineEdit_4.clear()
 
 
 
@@ -169,12 +176,12 @@ class Linear4(FloatProblem):
         self.number_of_constraints = Constrained_Number
         self.obj_directions = [self.MINIMIZE]
         self.lower_bound = [0 for _ in range(number_of_variables)]
+        self.bound = 10000, pi/2
         self.upper_bound = [10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
                             10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
                             10000, pi/2]#10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
                             #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
                             #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2
-
         self.Px_departure = x1
         self.Py_departure = y1
         self.Px_arrival = x2
@@ -189,8 +196,8 @@ class Linear4(FloatProblem):
         distance = 0
         S = solution.variables
         del_t = 1
-        Px_arrival =  self.Px_arrival
-        Py_arrival =  self.Py_arrival
+        Px_arrival = self.Px_arrival
+        Py_arrival = self.Py_arrival
         Px_departure = self.Px_departure
         Py_departure = self.Py_departure
         x = []
@@ -199,6 +206,7 @@ class Linear4(FloatProblem):
         y.append(Py_departure)
         R_diviation = 0
 
+        '''
         S[0] = 0.99
         S[1] = 0.5235987756
         S[2] = 0.99
@@ -207,7 +215,6 @@ class Linear4(FloatProblem):
         S[5] = 0.174533
         S[6] = 0.99
         S[7] = 0.087266
-        '''
         S[8] = 0.99
         S[9] = 0.087266
         S[10] = 0.99
@@ -223,6 +230,7 @@ class Linear4(FloatProblem):
         S[34] = 0.99
         S[35] = 0.087266
         '''
+
 
 
 
@@ -263,7 +271,7 @@ class Linear4(FloatProblem):
 
 
         solution.objectives[0] = distance
-        self.evaluate_constraints(solution)
+        #self.evaluate_constraints(solution)
         for i in range(len(x)):
             print(x[i], y[i])
 
@@ -284,6 +292,8 @@ class Linear4(FloatProblem):
         y_Obstacle2 = 12
         x_Obstacle3 = 20
         y_Obstacle3 = 25
+        x_Obstacle4 = 30
+        y_Obstacle4 = 0
 
         for i in range(int(solution.number_of_variables/2)-1):
             A = x[i] + S[2 * i] * del_t * cos(S[2 * i + 1])
@@ -291,11 +301,12 @@ class Linear4(FloatProblem):
             x.append(A)
             y.append(B)
 
-        e = 0.5
+        e = 0.2
         for i in range(int(solution.number_of_variables/2)-1):
             constraints[i] = sqrt((x_Obstacle1-x[i+1])**2 + (y_Obstacle1-y[i+1])**2) - 3 -e
             constraints[i+20] = sqrt((x_Obstacle2-x[i+1])**2 + (y_Obstacle2-y[i+1])**2) - 4 -e
             constraints[i+40] = sqrt((x_Obstacle3 - x[i+1]) ** 2 + (y_Obstacle3 - y[i+1]) ** 2) - 4 -e
+            constraints[i+60] = sqrt((x_Obstacle4 - x[i+1]) ** 2 + (y_Obstacle4 - y[i + 1]) ** 2) - 15 - e
 
 
         '''
