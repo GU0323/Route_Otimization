@@ -63,7 +63,7 @@ class MyWindow(QMainWindow, form_ui):
 
         problem = Linear4(self.Node, self.Px_departure, self.Px_arrival, self.Py_departure, self.Py_arrival, self.Constrained_Number)
 
-        max_evaluations = 10000
+        max_evaluations = 100000
         algorithm = NSGAII(
             problem=problem,
             population_size=100,
@@ -176,12 +176,13 @@ class Linear4(FloatProblem):
         self.number_of_constraints = Constrained_Number
         self.obj_directions = [self.MINIMIZE]
         self.lower_bound = [0 for _ in range(number_of_variables)]
-        self.bound = 10000, pi/2
+        #self.bound = 10000, pi/2
         self.upper_bound = [10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
                             10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
-                            10000, pi/2]#10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
+                            10000, pi/2,10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,]
                             #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
-                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2
+                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2]
+                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2]
         self.Px_departure = x1
         self.Py_departure = y1
         self.Px_arrival = x2
@@ -206,9 +207,17 @@ class Linear4(FloatProblem):
         y.append(Py_departure)
         R_diviation = 0
 
+
+
+
+
+        S[0] = 9
+        S[1] = 0.379
         '''
-        S[0] = 0.99
-        S[1] = 0.5235987756
+        
+        S[14] = 7
+        S[15] = 0.5236
+        
         S[2] = 0.99
         S[3] = 0.174533
         S[4] = 0.99
@@ -225,10 +234,11 @@ class Linear4(FloatProblem):
         S[15] = 0.087266
         S[16] = 0.99
         S[17] = 0.087266
-        S[32] = 0.99
-        S[33] = 0.087266
-        S[34] = 0.99
-        S[35] = 0.087266
+        
+        S[40] = 0.99
+        S[41] = 0.087266
+        S[42] = 0.99
+        S[43] = 0.087266
         '''
 
 
@@ -271,7 +281,7 @@ class Linear4(FloatProblem):
 
 
         solution.objectives[0] = distance
-        #self.evaluate_constraints(solution)
+        self.evaluate_constraints(solution)
         for i in range(len(x)):
             print(x[i], y[i])
 
@@ -301,12 +311,12 @@ class Linear4(FloatProblem):
             x.append(A)
             y.append(B)
 
-        e = 0.2
+        e = 0.3
         for i in range(int(solution.number_of_variables/2)-1):
             constraints[i] = sqrt((x_Obstacle1-x[i+1])**2 + (y_Obstacle1-y[i+1])**2) - 3 -e
-            constraints[i+20] = sqrt((x_Obstacle2-x[i+1])**2 + (y_Obstacle2-y[i+1])**2) - 4 -e
-            constraints[i+40] = sqrt((x_Obstacle3 - x[i+1]) ** 2 + (y_Obstacle3 - y[i+1]) ** 2) - 4 -e
-            constraints[i+60] = sqrt((x_Obstacle4 - x[i+1]) ** 2 + (y_Obstacle4 - y[i + 1]) ** 2) - 15 - e
+            constraints[i+9] = sqrt((x_Obstacle2-x[i+1])**2 + (y_Obstacle2-y[i+1])**2) - 4 -e
+            constraints[i+18] = sqrt((x_Obstacle3 - x[i+1]) ** 2 + (y_Obstacle3 - y[i+1]) ** 2) - 4 -e
+            #constraints[i+27] = sqrt((x_Obstacle4 - x[i+1]) ** 2 + (y_Obstacle4 - y[i + 1]) ** 2) - 15 - e
 
 
         '''
