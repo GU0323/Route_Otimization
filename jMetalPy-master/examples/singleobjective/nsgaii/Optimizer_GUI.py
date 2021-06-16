@@ -22,6 +22,186 @@ from jmetal.core.solution import BinarySolution, FloatSolution
 form_ui = uic.loadUiType("optimizer.ui")[0]
 
 
+
+
+
+class Linear4(FloatProblem):
+
+
+    def __init__(self, number_of_variables, x1, x2, y1, y2, Constrained_Number):
+
+        super(Linear4, self).__init__()
+        self.number_of_objectives = 1
+        self.number_of_variables = number_of_variables
+        self.number_of_constraints = Constrained_Number
+        self.obj_directions = [self.MINIMIZE]
+        self.lower_bound = [0 for _ in range(number_of_variables)]
+        #self.bound = 10000, pi/2
+        self.upper_bound = [10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2]
+                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
+                            #10000, pi/2]#,10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,]
+                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
+                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2]
+                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2]
+        self.Px_departure = x1
+        self.Py_departure = y1
+        self.Px_arrival = x2
+        self.Py_arrival = y2
+
+
+    def evaluate(self, solution: FloatSolution) -> FloatSolution:
+
+
+
+
+        distance = 0
+        S = solution.variables
+        del_t = 1
+        Px_arrival = self.Px_arrival
+        Py_arrival = self.Py_arrival
+        Px_departure = self.Px_departure
+        Py_departure = self.Py_departure
+        x = []
+        y = []
+        x.append(Px_departure)
+        y.append(Py_departure)
+        R_diviation = 0
+
+
+
+
+
+        S[0] = 5
+        S[1] = 0.386
+        '''
+        
+        S[14] = 7
+        S[15] = 0.5236
+        
+        S[2] = 0.99
+        S[3] = 0.174533
+        S[4] = 0.99
+        S[5] = 0.174533
+        S[6] = 0.99
+        S[7] = 0.087266
+        S[8] = 0.99
+        S[9] = 0.087266
+        S[10] = 0.99
+        S[11] = 0.087266
+        S[12] = 0.99
+        S[13] = 0.087266
+        S[14] = 0.99
+        S[15] = 0.087266
+        S[16] = 0.99
+        S[17] = 0.087266
+        
+        S[40] = 0.99
+        S[41] = 0.087266
+        S[42] = 0.99
+        S[43] = 0.087266
+        '''
+
+
+
+
+        for i in range(int(solution.number_of_variables/2)-1):
+            distance += S[2 * i] * del_t
+            A =x[i] + S[2 * i] * del_t * cos(S[2 * i + 1])
+            B =y[i] + S[2 * i] * del_t * sin(S[2 * i + 1])
+            x.append(A)
+            y.append(B)
+
+        R = sqrt((Px_arrival-x[-1])**2 + (Py_arrival-y[-1])**2)
+
+
+        #print(R)
+
+        #S[solution.number_of_variables-1] = acos(sqrt((Px_arrival - x[-1])**2) / R)
+
+        #xi = x[-1] + R * cos(S[-1])
+        #yi = y[-1] + R * sin(S[-1])
+        x.append(Px_arrival)
+        y.append(Py_arrival)
+
+
+
+
+
+        for i in range(int(solution.number_of_variables/2)):
+            R_mean = (distance + R) / int(solution.number_of_variables/2)
+
+            R_diviation += sqrt((S[2*i]*del_t - R_mean)**2)
+
+
+
+
+        distance = distance + R + R_diviation
+        #print(distance)
+
+
+
+        solution.objectives[0] = distance
+        self.evaluate_constraints(solution)
+        for i in range(len(x)):
+            print(x[i], y[i])
+
+
+        return solution
+
+    def evaluate_constraints(self, solution: FloatSolution) -> None:
+        constraints = [0.0 for _ in range(self.number_of_constraints)]
+        S = solution.variables
+        del_t = 1
+        x = []
+        y = []
+        x.append(0)
+        y.append(0)
+        x_Obstacle1 = 6
+        y_Obstacle1 = 7
+        x_Obstacle2 = 18
+        y_Obstacle2 = 12
+        x_Obstacle3 = 25
+        y_Obstacle3 = 25
+        x_Obstacle4 = 30
+        y_Obstacle4 = 0
+
+        for i in range(int(solution.number_of_variables/2)-1):
+            A = x[i] + S[2 * i] * del_t * cos(S[2 * i + 1])
+            B = y[i] + S[2 * i] * del_t * sin(S[2 * i + 1])
+            x.append(A)
+            y.append(B)
+
+        e = 1.0
+        for i in range(int(solution.number_of_variables/2)-1):
+            constraints[i] = sqrt((x_Obstacle1-x[i+1])**2 + (y_Obstacle1-y[i+1])**2) - 2 -e
+            constraints[i+9] = sqrt((x_Obstacle2-x[i+1])**2 + (y_Obstacle2-y[i+1])**2) - 4 -e
+            constraints[i+18] = sqrt((x_Obstacle3 - x[i+1]) ** 2 + (y_Obstacle3 - y[i+1]) ** 2) - 2 -e
+            #constraints[i+27] = sqrt((x_Obstacle4 - x[i+1]) ** 2 + (y_Obstacle4 - y[i + 1]) ** 2) - 15 - e
+
+
+        '''
+        for i in range(0, 8):
+            constraints[i] = sqrt((x_Obstacle1 - x[i+1]) ** 2 + (y_Obstacle1 - y[i+1]) ** 2) - 3 - e
+        for i in range(8, 20):
+            constraints[i] = sqrt((x_Obstacle2 - x[i + 1]) ** 2 + (y_Obstacle2 - y[i + 1]) ** 2) - 4 - e
+
+        for i in range(15, 20):
+            constraints[i+5] = sqrt((x_Obstacle3 - x[i+1]) ** 2 + (y_Obstacle3 - y[i+1]) ** 2) - 4 - e
+
+        for i in range(11, 20):
+            constraints[i+14] = sqrt((x_Obstacle4 - x[i+1]) ** 2 + (y_Obstacle4 - y[i+1]) ** 2) - 15 - e
+
+        for i in range(11, 20):
+            constraints[i + 14] = sqrt((x_Obstacle5 - x[i + 1]) ** 2 + (y_Obstacle5 - y[i + 1]) ** 2) - 15 - e
+        '''
+
+
+        solution.constraints = constraints
+
+    def get_name(self) -> str:
+        return 'Linear4'
+
+
 class MyWindow(QMainWindow, form_ui):
 
     def __init__(self):
@@ -100,12 +280,12 @@ class MyWindow(QMainWindow, form_ui):
             y.append(yi)
         R = sqrt((Px_arrival - x[-1]) ** 2 + (Py_arrival - y[-1]) ** 2)
 
-        last_theta = acos(sqrt((Px_arrival - x[-1]) ** 2) / R)
+        #last_theta = acos(sqrt((Px_arrival - x[-1]) ** 2) / R)
 
-        last_xpoint = x[-1] + R * cos(last_theta)
-        last_ypoint = y[-1] + R * sin(last_theta)
-        x.append(last_xpoint)
-        y.append(last_ypoint)
+        #last_xpoint = x[-1] + R * cos(last_theta)
+        #last_ypoint = y[-1] + R * sin(last_theta)
+        x.append(Px_arrival)
+        y.append(Py_arrival)
         print(x, y)
         '''
         plt.figure(figsize=(6, 6))
@@ -131,9 +311,9 @@ class MyWindow(QMainWindow, form_ui):
         '''
         self.fig.clear()
         ax = self.fig.add_subplot(111)
-        circle1 = patches.Circle((6, 7), 3, color="r")
+        circle1 = patches.Circle((6, 7), 2, color="r")
         circle2 = patches.Circle((18, 12), 4, color="r")
-        circle3 = patches.Circle((20, 25), 4, color="r")
+        circle3 = patches.Circle((25, 25), 2, color="r")
         ax.add_artist(circle1)
         ax.add_artist(circle2)
         ax.add_artist(circle3)
@@ -162,186 +342,6 @@ class MyWindow(QMainWindow, form_ui):
         self.lineEdit_2.clear()
         self.lineEdit_3.clear()
         self.lineEdit_4.clear()
-
-
-
-class Linear4(FloatProblem):
-
-
-    def __init__(self, number_of_variables, x1, x2, y1, y2, Constrained_Number):
-
-        super(Linear4, self).__init__()
-        self.number_of_objectives = 1
-        self.number_of_variables = number_of_variables
-        self.number_of_constraints = Constrained_Number
-        self.obj_directions = [self.MINIMIZE]
-        self.lower_bound = [0 for _ in range(number_of_variables)]
-        #self.bound = 10000, pi/2
-        self.upper_bound = [10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
-                            10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
-                            10000, pi/2,10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,]
-                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
-                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2]
-                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2]
-        self.Px_departure = x1
-        self.Py_departure = y1
-        self.Px_arrival = x2
-        self.Py_arrival = y2
-
-
-    def evaluate(self, solution: FloatSolution) -> FloatSolution:
-
-
-
-
-        distance = 0
-        S = solution.variables
-        del_t = 1
-        Px_arrival = self.Px_arrival
-        Py_arrival = self.Py_arrival
-        Px_departure = self.Px_departure
-        Py_departure = self.Py_departure
-        x = []
-        y = []
-        x.append(Px_departure)
-        y.append(Py_departure)
-        R_diviation = 0
-
-
-
-
-
-        S[0] = 9
-        S[1] = 0.379
-        '''
-        
-        S[14] = 7
-        S[15] = 0.5236
-        
-        S[2] = 0.99
-        S[3] = 0.174533
-        S[4] = 0.99
-        S[5] = 0.174533
-        S[6] = 0.99
-        S[7] = 0.087266
-        S[8] = 0.99
-        S[9] = 0.087266
-        S[10] = 0.99
-        S[11] = 0.087266
-        S[12] = 0.99
-        S[13] = 0.087266
-        S[14] = 0.99
-        S[15] = 0.087266
-        S[16] = 0.99
-        S[17] = 0.087266
-        
-        S[40] = 0.99
-        S[41] = 0.087266
-        S[42] = 0.99
-        S[43] = 0.087266
-        '''
-
-
-
-
-        for i in range(int(solution.number_of_variables/2)-1):
-            distance += S[2 * i] * del_t
-            A =x[i] + S[2 * i] * del_t * cos(S[2 * i + 1])
-            B =y[i] + S[2 * i] * del_t * sin(S[2 * i + 1])
-            x.append(A)
-            y.append(B)
-
-        R = sqrt((Px_arrival-x[-1])**2 + (Py_arrival-y[-1])**2)
-
-
-        #print(R)
-
-        S[solution.number_of_variables-1] = acos(sqrt((Px_arrival - x[-1])**2) / R)
-
-        xi = x[-1] + R * cos(S[-1])
-        yi = y[-1] + R * sin(S[-1])
-        x.append(xi)
-        y.append(yi)
-
-
-
-
-
-        for i in range(int(solution.number_of_variables/2)):
-            R_mean = (distance + R) / int(solution.number_of_variables/2)
-
-            R_diviation += sqrt((S[2*i]*del_t - R_mean)**2)
-
-
-
-
-        distance = distance + R + R_diviation
-        #print(distance)
-
-
-
-        solution.objectives[0] = distance
-        self.evaluate_constraints(solution)
-        for i in range(len(x)):
-            print(x[i], y[i])
-
-
-        return solution
-
-    def evaluate_constraints(self, solution: FloatSolution) -> None:
-        constraints = [0.0 for _ in range(self.number_of_constraints)]
-        S = solution.variables
-        del_t = 1
-        x = []
-        y = []
-        x.append(0)
-        y.append(0)
-        x_Obstacle1 = 6
-        y_Obstacle1 = 7
-        x_Obstacle2 = 18
-        y_Obstacle2 = 12
-        x_Obstacle3 = 20
-        y_Obstacle3 = 25
-        x_Obstacle4 = 30
-        y_Obstacle4 = 0
-
-        for i in range(int(solution.number_of_variables/2)-1):
-            A = x[i] + S[2 * i] * del_t * cos(S[2 * i + 1])
-            B = y[i] + S[2 * i] * del_t * sin(S[2 * i + 1])
-            x.append(A)
-            y.append(B)
-
-        e = 0.3
-        for i in range(int(solution.number_of_variables/2)-1):
-            constraints[i] = sqrt((x_Obstacle1-x[i+1])**2 + (y_Obstacle1-y[i+1])**2) - 3 -e
-            constraints[i+9] = sqrt((x_Obstacle2-x[i+1])**2 + (y_Obstacle2-y[i+1])**2) - 4 -e
-            constraints[i+18] = sqrt((x_Obstacle3 - x[i+1]) ** 2 + (y_Obstacle3 - y[i+1]) ** 2) - 4 -e
-            #constraints[i+27] = sqrt((x_Obstacle4 - x[i+1]) ** 2 + (y_Obstacle4 - y[i + 1]) ** 2) - 15 - e
-
-
-        '''
-        for i in range(0, 8):
-            constraints[i] = sqrt((x_Obstacle1 - x[i+1]) ** 2 + (y_Obstacle1 - y[i+1]) ** 2) - 3 - e
-        for i in range(8, 20):
-            constraints[i] = sqrt((x_Obstacle2 - x[i + 1]) ** 2 + (y_Obstacle2 - y[i + 1]) ** 2) - 4 - e
-
-        for i in range(15, 20):
-            constraints[i+5] = sqrt((x_Obstacle3 - x[i+1]) ** 2 + (y_Obstacle3 - y[i+1]) ** 2) - 4 - e
-
-        for i in range(11, 20):
-            constraints[i+14] = sqrt((x_Obstacle4 - x[i+1]) ** 2 + (y_Obstacle4 - y[i+1]) ** 2) - 15 - e
-
-        for i in range(11, 20):
-            constraints[i + 14] = sqrt((x_Obstacle5 - x[i + 1]) ** 2 + (y_Obstacle5 - y[i + 1]) ** 2) - 15 - e
-        '''
-
-
-        solution.constraints = constraints
-
-    def get_name(self) -> str:
-        return 'Linear4'
-
-
 
 
 
