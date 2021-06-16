@@ -135,7 +135,7 @@ class Linear4(FloatProblem):
 
 
 
-        distance = distance + R + R_diviation
+        distance = distance + R
         #print(distance)
 
 
@@ -278,7 +278,6 @@ class MyWindow(QMainWindow, form_ui):
             yi = y[i] + float(word[2 * i]) * del_t * sin(float(word[2 * i + 1]))
             x.append(xi)
             y.append(yi)
-        R = sqrt((Px_arrival - x[-1]) ** 2 + (Py_arrival - y[-1]) ** 2)
 
         #last_theta = acos(sqrt((Px_arrival - x[-1]) ** 2) / R)
 
