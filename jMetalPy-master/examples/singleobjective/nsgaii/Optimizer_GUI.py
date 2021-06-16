@@ -135,7 +135,7 @@ class Linear4(FloatProblem):
 
 
 
-        distance = distance + R
+        distance = distance + R + R_diviation
         #print(distance)
 
 
@@ -154,22 +154,29 @@ class Linear4(FloatProblem):
         del_t = 1
         x = []
         y = []
-        x.append(0)
-        y.append(0)
+        Px_departure = self.Px_departure
+        Py_departure = self.Py_departure
+
+        x.append(Px_departure)
+        y.append(Py_departure)
         x_Obstacle1 = 6
         y_Obstacle1 = 7
         x_Obstacle2 = 18
         y_Obstacle2 = 12
         x_Obstacle3 = 25
         y_Obstacle3 = 25
-        x_Obstacle4 = 30
-        y_Obstacle4 = 0
+
+        Px_arrival = self.Px_arrival
+        Py_arrival = self.Py_arrival
 
         for i in range(int(solution.number_of_variables/2)-1):
             A = x[i] + S[2 * i] * del_t * cos(S[2 * i + 1])
             B = y[i] + S[2 * i] * del_t * sin(S[2 * i + 1])
             x.append(A)
             y.append(B)
+
+        x.append(Px_arrival)
+        y.append(Py_arrival)
 
         e = 1.0
         for i in range(int(solution.number_of_variables/2)-1):
