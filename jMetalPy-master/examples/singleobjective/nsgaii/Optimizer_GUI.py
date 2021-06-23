@@ -35,14 +35,15 @@ class Linear4(FloatProblem):
         self.number_of_variables = number_of_variables
         self.number_of_constraints = Constrained_Number
         self.obj_directions = [self.MINIMIZE]
+        #self.bound = [10, pi/2] * (int(number_of_variables/2))
         self.lower_bound = [0 for _ in range(number_of_variables)]
-        #self.bound = 10000, pi/2
-        self.upper_bound = [10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2]
-                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
-                            #10000, pi/2]#,10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,]
-                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2,
-                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2]
-                            #10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2, 10000, pi/2]
+        #self.lower_bound = [0, -pi] * (int(number_of_variables/2))
+        self.upper_bound = [1000, pi] * (int(number_of_variables/2))
+        #self.lower_bound = [4.5, 0.473619, 4.5, 0.45367, 4.5, 0.405556, 4.5, -0.10795, 4.5, -0.64639, 4.5, -0.64602, 4.5, 1.462392]
+        #self.upper_bound = [5, 0.673619, 5, 0.65367, 5, 0.605556, 5, 0.092052, 5, -0.44639, 5, -0.44602, 5, 1.662392]
+        print(self.upper_bound)
+
+
         self.Px_departure = x1
         self.Py_departure = y1
         self.Px_arrival = x2
@@ -56,6 +57,7 @@ class Linear4(FloatProblem):
 
         distance = 0
         S = solution.variables
+
         del_t = 1
         Px_arrival = self.Px_arrival
         Py_arrival = self.Py_arrival
@@ -70,40 +72,6 @@ class Linear4(FloatProblem):
 
 
 
-
-        S[0] = 5
-        S[1] = 0.386
-        '''
-        
-        S[14] = 7
-        S[15] = 0.5236
-        
-        S[2] = 0.99
-        S[3] = 0.174533
-        S[4] = 0.99
-        S[5] = 0.174533
-        S[6] = 0.99
-        S[7] = 0.087266
-        S[8] = 0.99
-        S[9] = 0.087266
-        S[10] = 0.99
-        S[11] = 0.087266
-        S[12] = 0.99
-        S[13] = 0.087266
-        S[14] = 0.99
-        S[15] = 0.087266
-        S[16] = 0.99
-        S[17] = 0.087266
-        
-        S[40] = 0.99
-        S[41] = 0.087266
-        S[42] = 0.99
-        S[43] = 0.087266
-        '''
-
-
-
-
         for i in range(int(solution.number_of_variables/2)-1):
             distance += S[2 * i] * del_t
             A =x[i] + S[2 * i] * del_t * cos(S[2 * i + 1])
@@ -114,12 +82,7 @@ class Linear4(FloatProblem):
         R = sqrt((Px_arrival-x[-1])**2 + (Py_arrival-y[-1])**2)
 
 
-        #print(R)
 
-        #S[solution.number_of_variables-1] = acos(sqrt((Px_arrival - x[-1])**2) / R)
-
-        #xi = x[-1] + R * cos(S[-1])
-        #yi = y[-1] + R * sin(S[-1])
         x.append(Px_arrival)
         y.append(Py_arrival)
 
@@ -142,8 +105,8 @@ class Linear4(FloatProblem):
 
         solution.objectives[0] = distance
         self.evaluate_constraints(solution)
-        for i in range(len(x)):
-            print(x[i], y[i])
+        #for i in range(len(x)):
+            #print(x[i], y[i])
 
 
         return solution
@@ -151,6 +114,7 @@ class Linear4(FloatProblem):
     def evaluate_constraints(self, solution: FloatSolution) -> None:
         constraints = [0.0 for _ in range(self.number_of_constraints)]
         S = solution.variables
+
         del_t = 1
         x = []
         y = []
@@ -159,12 +123,13 @@ class Linear4(FloatProblem):
 
         x.append(Px_departure)
         y.append(Py_departure)
+
         x_Obstacle1 = 6
         y_Obstacle1 = 7
-        x_Obstacle2 = 18
-        y_Obstacle2 = 12
-        x_Obstacle3 = 25
-        y_Obstacle3 = 25
+        x_Obstacle2 = 14
+        y_Obstacle2 = 16
+        x_Obstacle3 = 23
+        y_Obstacle3 = 20
 
         Px_arrival = self.Px_arrival
         Py_arrival = self.Py_arrival
@@ -178,11 +143,11 @@ class Linear4(FloatProblem):
         x.append(Px_arrival)
         y.append(Py_arrival)
 
-        e = 1.0
-        for i in range(int(solution.number_of_variables/2)-1):
-            constraints[i] = sqrt((x_Obstacle1-x[i+1])**2 + (y_Obstacle1-y[i+1])**2) - 2 -e
-            constraints[i+9] = sqrt((x_Obstacle2-x[i+1])**2 + (y_Obstacle2-y[i+1])**2) - 4 -e
-            constraints[i+18] = sqrt((x_Obstacle3 - x[i+1]) ** 2 + (y_Obstacle3 - y[i+1]) ** 2) - 2 -e
+        e = 1
+        for i in range(int(solution.number_of_variables/2)):
+            constraints[i] = sqrt((x_Obstacle1-x[i+1])**2 + (y_Obstacle1-y[i+1])**2) - 3 -e
+            constraints[i+10] = sqrt((x_Obstacle2-x[i+1])**2 + (y_Obstacle2-y[i+1])**2) - 4 -e
+            constraints[i+20] = sqrt((x_Obstacle3 - x[i+1]) ** 2 + (y_Obstacle3 - y[i+1]) ** 2) - 3 -e
             #constraints[i+27] = sqrt((x_Obstacle4 - x[i+1]) ** 2 + (y_Obstacle4 - y[i + 1]) ** 2) - 15 - e
 
 
@@ -250,7 +215,7 @@ class MyWindow(QMainWindow, form_ui):
 
         problem = Linear4(self.Node, self.Px_departure, self.Px_arrival, self.Py_departure, self.Py_arrival, self.Constrained_Number)
 
-        max_evaluations = 100000
+        max_evaluations = 20000
         algorithm = NSGAII(
             problem=problem,
             population_size=100,
@@ -265,14 +230,15 @@ class MyWindow(QMainWindow, form_ui):
         front = algorithm.get_result()
 
         # Save results to file
-        print_function_values_to_file(front, 'FUN3(초기값5노드).' + algorithm.get_name() + "-" + problem.get_name())
-        print_variables_to_file(front, 'VAR3(초기값5노드).' + algorithm.get_name() + "-" + problem.get_name())
+        print_function_values_to_file(front, 'FUN3_linear_초기조건입력완료2.' + algorithm.get_name() + "-" + problem.get_name())
+        print_variables_to_file(front, 'VAR3_linear_초기조건입력완료2.' + algorithm.get_name() + "-" + problem.get_name())
 
-        file_open = open('VAR3(초기값5노드).' + algorithm.get_name() + "-" + problem.get_name(), 'r', encoding='utf-8')
+        file_open = open('VAR3_linear_초기조건입력완료2.' + algorithm.get_name() + "-" + problem.get_name(), 'r', encoding='utf-8')
         line = file_open.readlines()
         word = line[-1].split(" ")
         x = []
         y = []
+        y2 = []
         Px_arrival = self.Px_arrival
         Py_arrival = self.Py_arrival
         Px_departure = self.Px_departure
@@ -285,50 +251,30 @@ class MyWindow(QMainWindow, form_ui):
             yi = y[i] + float(word[2 * i]) * del_t * sin(float(word[2 * i + 1]))
             x.append(xi)
             y.append(yi)
+            y2.append(yi)
 
-        #last_theta = acos(sqrt((Px_arrival - x[-1]) ** 2) / R)
-
-        #last_xpoint = x[-1] + R * cos(last_theta)
-        #last_ypoint = y[-1] + R * sin(last_theta)
         x.append(Px_arrival)
         y.append(Py_arrival)
-        print(x, y)
-        '''
-        plt.figure(figsize=(6, 6))
-        plt.plot(x, y)
-        shp1 = patches.Circle((6, 7), radius=3, color='g')
-        shp2 = patches.Circle((18, 12), radius=4, color='g')
-        shp3 = patches.Circle((20, 25), radius=4, color='g')
-        # shp4 = patches.Circle((30, 0), radius=15, color='g')
-        # shp5 = patches.Circle((0, 30), radius=15, color='g')
-        # shp = patches.Rectangle((13, 13), 5.5, 5.5, color='g')
-        # plt.gca().add_patch(shp)
-        plt.gca().add_patch(shp1)
-        plt.gca().add_patch(shp2)
-        plt.gca().add_patch(shp3)
-        # plt.gca().add_patch(shp4)
-        # plt.gca().add_patch(shp5)
+        y2.append(Py_arrival)
+        for i in range(len(x)):
+            print(x[i], y[i])
 
-        plt.xlabel('X')
-        plt.ylabel('Y')
-        plt.xlim(0, 30)
-        plt.ylim(0, 30)
-        plt.show()
-        '''
         self.fig.clear()
         ax = self.fig.add_subplot(111)
-        circle1 = patches.Circle((6, 7), 2, color="r")
-        circle2 = patches.Circle((18, 12), 4, color="r")
-        circle3 = patches.Circle((25, 25), 2, color="r")
+        circle1 = patches.Circle((6, 7), 3, color="r")
+        circle2 = patches.Circle((14, 16), 4, color="r")
+        circle3 = patches.Circle((23, 20), 3, color="r")
         ax.add_artist(circle1)
         ax.add_artist(circle2)
         ax.add_artist(circle3)
 
         ax.plot(x, y)
+        ax.set_xlim([0, 30])
+        ax.set_ylim([0, 30])
         ax.set_xlabel("x")
         ax.set_xlabel("y")
         ax.set_title("Optimizer_route")
-        ax.legend()
+
         ax.grid()
         self.canvas.draw()
 
